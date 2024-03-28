@@ -5,8 +5,20 @@ import Product from "../models/productModel.js";
 // @route   GET /api/products
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-  const products = await Product.find({});
-  res.json(products);
+  const pageSize = process.env.PAGINATION_LIMIT; // number of products per page
+  const page = Number(req.query.pageNumber) || 1; // means if pageNumber is not provided, default to 1
+
+  const keyword = req.query.keyword
+    ? { name: { $regex: req.query.keyword, $options: "i" } } // means if keyword is provided, search for products that contain the keyword in their name (case-insensitive)
+    : {};
+
+  const count = await Product.countDocuments({ ...keyword }); // total number of products
+
+  const products = await Product.find({ ...keyword })
+    .limit(pageSize) // limit the number of products to be fetched
+    .skip(pageSize * (page - 1)); // skip the products that are already fetched
+
+  res.json({ products, page, pages: Math.ceil(count / pageSize) });
 });
 
 // @desc    Fetch single product
@@ -121,6 +133,15 @@ const createProductReview = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get top rated  products
+// @route   GET /api/products/top
+// @access  Public
+const getTopProducts = asyncHandler(async (req, res) => {
+  const products = await Product.find({}).sort({ rating: -1 }).limit(3);
+
+  res.status(200).json(products);
+});
+
 export {
   getProducts,
   getProductById,
@@ -128,4 +149,5 @@ export {
   updateProduct,
   deleteProduct,
   createProductReview,
+  getTopProducts,
 };

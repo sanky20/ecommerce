@@ -11,5 +11,9 @@ export default defineConfig({
       '/uploads': 'http://localhost:5000',
     },
   },
+  build: {
+    outDir: 'build',
+  },
 
 })
+

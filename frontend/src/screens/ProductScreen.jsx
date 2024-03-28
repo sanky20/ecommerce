@@ -6,6 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Rating from "../components/Rating";
 import Loader from "../components/Loader";
+import Meta from "../components/Meta";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../slices/cartSlice.js";
@@ -62,6 +63,7 @@ const ProductScreen = () => {
 
   return (
     <>
+      <Meta title={product?.name} />
       <Link className="btn btn-light my-3" to="/">
         Go Back
       </Link>
